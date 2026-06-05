@@ -1,14 +1,21 @@
-'use client'
-
-import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
+import { Metadata } from 'next'
 import { searchTools } from '@/lib/data'
 import Link from 'next/link'
 
-function SearchResults() {
-  const searchParams = useSearchParams()
-  const query = searchParams.get('q') || ''
-  const results = query ? searchTools(query) : []
+export const metadata: Metadata = {
+  title: '搜索工具',
+  description: '在AI工具库中搜索你需要的AI工具',
+}
+
+export const revalidate = 3600
+
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: { q?: string }
+}) {
+  const query = searchParams.q || ''
+  const results = query ? await searchTools(query) : []
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
@@ -32,13 +39,5 @@ function SearchResults() {
         <p className="text-gray-500 text-center py-12">未找到相关工具，请尝试其他关键词</p>
       )}
     </div>
-  )
-}
-
-export default function SearchPage() {
-  return (
-    <Suspense fallback={<div className="text-center py-12">搜索中...</div>}>
-      <SearchResults />
-    </Suspense>
   )
 }

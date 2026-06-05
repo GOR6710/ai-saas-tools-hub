@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const category = getCategoryBySlug(slug)
+  const category = await getCategoryBySlug(slug)
   if (!category) return { title: '分类未找到' }
 
   return {
@@ -16,16 +16,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export async function generateStaticParams() {
-  const { categories } = await import('@/lib/data')
+  const { getCategories } = await import('@/lib/data')
+  const categories = await getCategories()
   return categories.map(c => ({ slug: c.slug }))
 }
 
+export const revalidate = 3600
+
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const category = getCategoryBySlug(slug)
+  const category = await getCategoryBySlug(slug)
   if (!category) notFound()
 
-  const tools = getToolsByCategory(slug)
+  const tools = await getToolsByCategory(slug)
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">

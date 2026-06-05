@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
-import { categories, tools } from '@/lib/data'
+import { getCategories, getTools } from '@/lib/data'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'AI工具库 - AI SaaS 工具对比与推荐平台',
-  description: '发现最适合你的 AI 工具和生产力软件。提供详细对比、真实评测和场景化推荐。收录AI写作、AI编程、AI图像、AI对话等200+工具。',
+  description: '发现最适合你的 AI 工具和生产力软件。提供详细对比、真实评测和场景化推荐。',
   keywords: ['AI工具', 'SaaS工具', 'AI推荐', 'AI写作', 'AI编程', 'AI图像', '生产力工具'],
   openGraph: {
     title: 'AI工具库 - AI SaaS 工具对比与推荐平台',
@@ -12,12 +12,15 @@ export const metadata: Metadata = {
   },
 }
 
-export default function HomePage() {
+export const revalidate = 3600 // Revalidate every hour
+
+export default async function HomePage() {
+  const categories = await getCategories()
+  const tools = await getTools()
   const featuredTools = tools.slice(0, 4)
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -37,7 +40,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Tools */}
       <section className="py-16 px-4 max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">编辑推荐</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -64,7 +66,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">按分类浏览</h2>
@@ -82,7 +83,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Schema JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebSite",

@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { tools } from '@/lib/data'
+import { getTools } from '@/lib/data'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -7,7 +7,11 @@ export const metadata: Metadata = {
   description: '选择2-4个AI工具进行详细对比，从功能、定价、适用场景等维度全面分析。',
 }
 
-export default function ComparePage() {
+export const revalidate = 3600
+
+export default async function ComparePage() {
+  const tools = await getTools()
+
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold text-gray-800 mb-4">工具对比</h1>

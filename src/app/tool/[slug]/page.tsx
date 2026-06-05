@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const tool = getToolBySlug(slug)
+  const tool = await getToolBySlug(slug)
   if (!tool) return { title: '工具未找到' }
 
   return {
@@ -16,13 +16,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export async function generateStaticParams() {
-  const { tools } = await import('@/lib/data')
+  const { getTools } = await import('@/lib/data')
+  const tools = await getTools()
   return tools.map(t => ({ slug: t.slug }))
 }
 
+export const revalidate = 3600
+
 export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const tool = getToolBySlug(slug)
+  const tool = await getToolBySlug(slug)
   if (!tool) notFound()
 
   return (

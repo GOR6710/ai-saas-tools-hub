@@ -3,8 +3,9 @@ import { getToolBySlug } from '@/lib/data'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const tool = getToolBySlug(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const tool = getToolBySlug(slug)
   if (!tool) return { title: '工具未找到' }
 
   return {
@@ -19,8 +20,9 @@ export async function generateStaticParams() {
   return tools.map(t => ({ slug: t.slug }))
 }
 
-export default function ToolPage({ params }: { params: { slug: string } }) {
-  const tool = getToolBySlug(params.slug)
+export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const tool = getToolBySlug(slug)
   if (!tool) notFound()
 
   return (

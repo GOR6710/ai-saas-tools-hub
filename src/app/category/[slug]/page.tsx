@@ -3,8 +3,9 @@ import { getCategoryBySlug, getToolsByCategory } from '@/lib/data'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const category = getCategoryBySlug(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const category = getCategoryBySlug(slug)
   if (!category) return { title: '分类未找到' }
 
   return {
@@ -19,11 +20,12 @@ export async function generateStaticParams() {
   return categories.map(c => ({ slug: c.slug }))
 }
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const category = getCategoryBySlug(params.slug)
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const category = getCategoryBySlug(slug)
   if (!category) notFound()
 
-  const tools = getToolsByCategory(params.slug)
+  const tools = getToolsByCategory(slug)
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
